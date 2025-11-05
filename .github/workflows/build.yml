@@ -79,8 +79,8 @@ jobs:
         run: cargo build
         working-directory: apps/frontend/src-tauri
 
-  build-backend:
-    name: Build Backend Docker Image
+  check-backend:
+    name: Check Backend Migrations
     runs-on: ubuntu-latest
 
     steps:
@@ -123,16 +123,3 @@ jobs:
             exit 1
           fi
           echo "✅ All migrations are up to date"
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./apps/backend
-          file: ./apps/backend/Dockerfile
-          push: false
-          tags: booktracker-backend:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max

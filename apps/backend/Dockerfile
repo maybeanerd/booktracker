@@ -1,15 +1,24 @@
-FROM node:22.17.1
+FROM node:22.17.1-slim
 WORKDIR /app
 
-COPY ["package.json", "./"]
+# Copy workspace configuration
+COPY pnpm-workspace.yaml ./
+COPY pnpm-lock.yaml ./
+
+# Copy backend package.json
+COPY apps/backend/package.json ./apps/backend/
+
 # Install pnpm
 RUN corepack enable pnpm
 
 # Install dependencies
-RUN pnpm i --frozen-lockfile
+RUN pnpm install --filter backend --frozen-lockfile
+
+# Copy backend source
+COPY apps/backend ./apps/backend
 
 # Build
-COPY . .
+WORKDIR /app/apps/backend
 RUN pnpm build
 
 # Expose port

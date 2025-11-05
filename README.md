@@ -175,11 +175,11 @@ docker-compose down
 
 ### Backend Docker Image
 
-The backend Dockerfile is inspired by best practices and uses pnpm for efficient dependency management.
+The backend Dockerfile is inspired by best practices and uses pnpm with a multi-stage build for optimal image size.
 
 ```bash
-# Build
-docker build -t booktracker-backend ./apps/backend
+# Build (context is repo root, not apps/backend)
+docker build -f apps/backend/Dockerfile -t booktracker-backend .
 
 # Run
 docker run -p 3001:3001 \
