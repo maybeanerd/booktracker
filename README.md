@@ -175,7 +175,7 @@ docker-compose down
 
 ### Backend Docker Image
 
-The backend Dockerfile is inspired by best practices and uses pnpm with a multi-stage build for optimal image size.
+The backend Dockerfile uses `node:22.17.1-slim` and pnpm monorepo support for efficient builds.
 
 ```bash
 # Build (context is repo root, not apps/backend)
