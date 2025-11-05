@@ -68,6 +68,10 @@ jobs:
             libwebkit2gtk-4.1-dev \
             patchelf
 
+      - name: Set PKG_CONFIG_PATH
+        if: matrix.platform == 'ubuntu-latest'
+        run: echo "PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
+
       - name: Install frontend dependencies
         run: pnpm install
 
