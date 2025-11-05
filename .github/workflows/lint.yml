@@ -21,7 +21,7 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: './src-tauri -> target'
+          workspaces: './apps/frontend/src-tauri -> target'
 
       - name: Install dependencies (Ubuntu)
         run: |
@@ -41,11 +41,11 @@ jobs:
 
       - name: Check formatting
         run: cargo fmt --all --check
-        working-directory: src-tauri
+        working-directory: apps/frontend/src-tauri
 
       - name: Run Clippy
         run: cargo clippy -- -D warnings
-        working-directory: src-tauri
+        working-directory: apps/frontend/src-tauri
 
   frontend-check:
     name: Frontend Check
@@ -80,7 +80,10 @@ jobs:
         run: pnpm install
 
       - name: Generate Nuxt types
-        run: pnpm nuxt prepare
+        run: pnpm --filter frontend nuxt prepare
 
-      - name: Type check
-        run: pnpm nuxt typecheck
+      - name: Type check frontend
+        run: pnpm --filter frontend nuxt typecheck
+
+      - name: Lint backend
+        run: pnpm --filter backend lint
