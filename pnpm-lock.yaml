@@ -14,9 +14,6 @@ importers:
       '@tauri-apps/plugin-opener':
         specifier: 2.5.2
         version: 2.5.2
-      vue:
-        specifier: 3.5.22
-        version: 3.5.22(typescript@5.9.3)
     devDependencies:
       '@nuxt/devtools':
         specifier: 3.0.1
