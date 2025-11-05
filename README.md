@@ -1,168 +1,264 @@
-# booktracker
+# BookTracker
 
-[![Build](https://github.com/maybeanerd/booktracker/workflows/Build/badge.svg)](https://github.com/maybeanerd/booktracker/actions/workflows/build.yml)
-[![Lint](https://github.com/maybeanerd/booktracker/workflows/Lint/badge.svg)](https://github.com/maybeanerd/booktracker/actions/workflows/lint.yml)
-[![Release](https://github.com/maybeanerd/booktracker/workflows/Release/badge.svg)](https://github.com/maybeanerd/booktracker/actions/workflows/release.yml)
+A modern book tracking application built with Tauri, Nuxt 3, and NestJS.
 
-A multi-platform app to track your book reading journey, built with Nuxt 4, Tauri 2, and NestJS.
+## 📁 Project Structure
 
-## Tech Stack
+This is a pnpm monorepo containing:
 
-- **Frontend**: Nuxt 4 (Vue 3)
-- **Desktop Client**: Tauri 2
-- **Backend API**: NestJS with Drizzle ORM
-- **Database**: PostgreSQL
-
-## Project Structure
-
-This is a pnpm monorepo with the following structure:
+- **`apps/frontend`** - Tauri desktop application with Nuxt 3
+- **`apps/backend`** - NestJS REST API with Drizzle ORM
 
 ```
 booktracker/
 ├── apps/
-│   ├── frontend/          # Nuxt 4 frontend + Tauri desktop client
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── public/
-│   │   ├── src-tauri/     # Tauri Rust backend
-│   │   └── nuxt.config.ts
-│   └── backend/           # NestJS API server
-│       ├── src/
-│       │   ├── db/        # Drizzle ORM setup
-│       │   └── main.ts
-│       ├── drizzle.config.ts
-│       └── Dockerfile
-└── package.json           # Root workspace configuration
+│   ├── frontend/           # Tauri + Nuxt 3 desktop app
+│   │   ├── src-tauri/      # Rust backend for Tauri
+│   │   ├── pages/          # Nuxt pages
+│   │   ├── components/     # Vue components
+│   │   └── nuxt.config.ts  # Nuxt configuration
+│   └── backend/            # NestJS API
+│       ├── src/            # Source code
+│       ├── drizzle/        # Database migrations
+│       └── Dockerfile      # Container definition
+├── .github/workflows/      # CI/CD pipelines
+├── docker-compose.yml      # Local development setup
+├── pnpm-workspace.yaml     # Monorepo configuration
+└── package.json            # Root scripts
 ```
 
-## Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- **Node.js**: 24.11.0 (install via [nvm](https://github.com/nvm-sh/nvm#installing-and-updating))
-- **Rust**: Latest stable (install from [rustup.rs](https://rustup.rs/)) - only needed for desktop app
-- **PostgreSQL**: Latest stable - only needed for backend API
+- [Node.js](https://nodejs.org/) >= 24.11.0 (see `.nvmrc`)
+- [pnpm](https://pnpm.io/) >= 10.11.0
+- [Rust](https://www.rust-lang.org/) (for Tauri)
+- [PostgreSQL](https://www.postgresql.org/) (or use Docker Compose)
 
-### Setup
+### Installation
 
-1. **Enable Corepack** (one-time setup):
+1. **Clone the repository**
    ```bash
-   corepack enable
+   git clone https://github.com/yourusername/booktracker.git
+   cd booktracker
    ```
-   
-   This ensures you use the correct pnpm version (`10.11.0`) specified in `package.json`.
 
-2. **Install dependencies**:
+2. **Install dependencies**
    ```bash
    pnpm install
    ```
 
-3. **Set up the backend** (optional - only if you want to run the API):
+3. **Set up the database**
+   
+   Using Docker:
    ```bash
-   # Create a PostgreSQL database
-   createdb booktracker
+   docker-compose up -d postgres
+   ```
    
-   # Copy the example env file
-   cp apps/backend/.env.example apps/backend/.env
+   Or install PostgreSQL locally and create a database named `booktracker`.
+
+4. **Configure backend environment**
    
-   # Update DATABASE_URL in apps/backend/.env with your database connection string
+   Copy the example environment file:
+   ```bash
+   cp apps/backend/env.example apps/backend/.env
+   ```
    
-   # Run database migrations
-   pnpm --filter backend db:migrate
+   Edit `apps/backend/.env` with your database credentials.
+
+5. **Run database migrations**
+   ```bash
+   pnpm db:migrate
    ```
 
-4. **Run the app**:
-   ```bash
-   # Full desktop app (Tauri + Nuxt)
-   pnpm tauri:dev
-   
-   # Frontend only (for UI development)
-   pnpm dev:frontend
-   
-   # Backend API only
-   pnpm dev:backend
-   
-   # Both frontend and backend (parallel)
-   pnpm dev
-   ```
+### Development
 
-## Development
-
-### Frontend Development
-
+**Run everything in parallel:**
 ```bash
-# Run frontend dev server
-pnpm dev:frontend
-
-# Run desktop app
-pnpm tauri:dev
-
-# Type check
-pnpm --filter frontend typecheck
+pnpm dev
 ```
 
-### Backend Development
+**Or run individually:**
+
+- **Frontend (Tauri):**
+  ```bash
+  pnpm dev:frontend
+  # or
+  pnpm tauri:dev
+  ```
+
+- **Backend (NestJS):**
+  ```bash
+  pnpm dev:backend
+  ```
+
+- **Database Studio:**
+  ```bash
+  pnpm db:studio
+  ```
+
+## 🏗️ Building
+
+### Frontend (Desktop App)
 
 ```bash
-# Run backend dev server
-pnpm dev:backend
-
-# Run tests
-pnpm test:backend
-
-# Lint
-pnpm --filter backend lint
-
-# Database operations
-pnpm --filter backend db:generate  # Generate migrations
-pnpm --filter backend db:migrate   # Run migrations
-pnpm --filter backend db:studio    # Open Drizzle Studio
-```
-
-## Building
-
-### Desktop App
-
-```bash
-# Build for production
+# Build for your current platform
 pnpm tauri:build
+
+# Or build just the Nuxt frontend
+pnpm build:frontend
 ```
 
-This will create platform-specific installers in `apps/frontend/src-tauri/target/release/bundle/`.
-
-### Backend API
+### Backend (API)
 
 ```bash
-# Build backend
+# Build the NestJS app
 pnpm build:backend
 
-# Run production build
-pnpm --filter backend start:prod
+# Build Docker image
+docker build -t booktracker-backend ./apps/backend
 ```
 
-Or using Docker Compose (includes PostgreSQL):
+## 🧪 Testing
+
+### Frontend
+```bash
+# Run Rust tests
+pnpm test:rust
+```
+
+### Backend
+```bash
+# Run unit tests
+pnpm test:backend
+
+# Run e2e tests
+pnpm test:backend:e2e
+```
+
+## 🗄️ Database
+
+This project uses [Drizzle ORM](https://orm.drizzle.team/) for database management.
+
+### Common Commands
 
 ```bash
-# Start both backend and database
-docker-compose up
+# Generate new migration
+pnpm db:generate
 
-# Start in detached mode
+# Run migrations
+pnpm db:migrate
+
+# Open Drizzle Studio
+pnpm db:studio
+```
+
+### Schema
+
+The database schema is defined in `apps/backend/src/db/schema.ts`.
+
+## 🐳 Docker
+
+### Local Development with Docker Compose
+
+```bash
+# Start PostgreSQL + Backend
 docker-compose up -d
+
+# View logs
+docker-compose logs -f
 
 # Stop services
 docker-compose down
 ```
 
-Or build backend Docker image manually:
+### Backend Docker Image
+
+The backend Dockerfile is inspired by best practices and uses pnpm for efficient dependency management.
 
 ```bash
-cd apps/backend
-docker build -t booktracker-backend .
-docker run -p 3001:3001 -e DATABASE_URL=postgresql://... booktracker-backend
+# Build
+docker build -t booktracker-backend ./apps/backend
+
+# Run
+docker run -p 3001:3001 \
+  -e DATABASE_URL="postgresql://user:pass@host:5432/db" \
+  booktracker-backend
 ```
 
-## Architecture
+## 📝 Scripts Reference
 
-- **Frontend (Nuxt)**: Runs as a SPA within Tauri for the desktop app
-- **Backend (NestJS)**: Optional REST API server for data sync/multi-device support
-- **Database (PostgreSQL)**: Backend data storage with Drizzle ORM for type-safe queries
+### Root-level commands
+
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Run frontend and backend in parallel |
+| `pnpm build` | Build all apps |
+| `pnpm typecheck` | Type check all packages |
+
+### Frontend commands
+
+| Command | Description |
+|---------|-------------|
+| `pnpm dev:frontend` | Run Nuxt dev server |
+| `pnpm build:frontend` | Build Nuxt for production |
+| `pnpm tauri:dev` | Run Tauri in dev mode |
+| `pnpm tauri:build` | Build Tauri desktop app |
+| `pnpm format:rust` | Format Rust code |
+| `pnpm lint:rust` | Lint Rust code |
+| `pnpm test:rust` | Run Rust tests |
+
+### Backend commands
+
+| Command | Description |
+|---------|-------------|
+| `pnpm dev:backend` | Run NestJS in watch mode |
+| `pnpm build:backend` | Build NestJS for production |
+| `pnpm lint:backend` | Lint backend code |
+| `pnpm test:backend` | Run backend tests |
+| `pnpm test:backend:e2e` | Run backend e2e tests |
+| `pnpm db:generate` | Generate DB migration |
+| `pnpm db:migrate` | Run DB migrations |
+| `pnpm db:studio` | Open Drizzle Studio |
+
+## 🔧 CI/CD
+
+The project includes several GitHub Actions workflows:
+
+- **`build.yml`** - Builds frontend and backend on PR/push
+- **`lint.yml`** - Runs linting and type checking
+- **`release.yml`** - Creates Tauri releases for all platforms
+- **`docker-backend.yml`** - Builds and pushes backend Docker image
+- **`updater.yml`** - Generates Tauri updater JSON
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **[Tauri](https://tauri.app/)** - Desktop app framework
+- **[Nuxt 3](https://nuxt.com/)** - Vue.js framework
+- **[Vue 3](https://vuejs.org/)** - Progressive JavaScript framework
+- **[TypeScript](https://www.typescriptlang.org/)** - Type-safe JavaScript
+
+### Backend
+- **[NestJS](https://nestjs.com/)** - Progressive Node.js framework
+- **[Drizzle ORM](https://orm.drizzle.team/)** - TypeScript ORM
+- **[PostgreSQL](https://www.postgresql.org/)** - Relational database
+- **[TypeScript](https://www.typescriptlang.org/)** - Type-safe JavaScript
+
+### Tools
+- **[pnpm](https://pnpm.io/)** - Fast, disk space efficient package manager
+- **[Docker](https://www.docker.com/)** - Containerization
+- **[GitHub Actions](https://github.com/features/actions)** - CI/CD
+
+## 📄 License
+
+[MIT](LICENSE)
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+---
+
+Built with ✨ by [maybeanerd](https://github.com/maybeanerd)

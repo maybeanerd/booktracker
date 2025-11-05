@@ -5,18 +5,25 @@
   "type": "module",
   "packageManager": "pnpm@10.20.0",
   "scripts": {
-    "dev": "pnpm --parallel --filter \"./apps/*\" dev",
+    "dev": "pnpm --parallel -r dev",
     "dev:frontend": "pnpm --filter frontend dev",
     "dev:backend": "pnpm --filter backend start:dev",
-    "build": "pnpm --filter \"./apps/*\" build",
+    "build": "pnpm -r build",
     "build:frontend": "pnpm --filter frontend build",
     "build:backend": "pnpm --filter backend build",
+    "preview:frontend": "pnpm --filter frontend preview",
+    "typecheck": "pnpm -r typecheck",
     "tauri": "pnpm --filter frontend tauri",
     "tauri:dev": "pnpm --filter frontend tauri:dev",
     "tauri:build": "pnpm --filter frontend tauri:build",
     "format:rust": "cd apps/frontend/src-tauri && cargo fmt",
     "lint:rust": "cd apps/frontend/src-tauri && cargo clippy",
     "test:rust": "cd apps/frontend/src-tauri && cargo test",
-    "test:backend": "pnpm --filter backend test"
+    "lint:backend": "pnpm --filter backend lint",
+    "test:backend": "pnpm --filter backend test",
+    "test:backend:e2e": "pnpm --filter backend test:e2e",
+    "db:generate": "pnpm --filter backend db:generate",
+    "db:migrate": "pnpm --filter backend db:migrate",
+    "db:studio": "pnpm --filter backend db:studio"
   }
 }

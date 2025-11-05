@@ -1,33 +1,40 @@
-version: '3.8'
-
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     container_name: booktracker-postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: booktracker
       POSTGRES_USER: booktracker
       POSTGRES_PASSWORD: booktracker
+      POSTGRES_DB: booktracker
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U booktracker']
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
       context: ./apps/backend
       dockerfile: Dockerfile
     container_name: booktracker-backend
+    restart: unless-stopped
     environment:
+      NODE_ENV: production
       DATABASE_URL: postgresql://booktracker:booktracker@postgres:5432/booktracker
       PORT: 3001
     ports:
-      - "3001:3001"
+      - '3001:3001'
     depends_on:
-      - postgres
-    restart: unless-stopped
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./apps/backend:/app
+      - /app/node_modules
 
 volumes:
   postgres_data:
-
