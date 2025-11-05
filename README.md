@@ -65,18 +65,24 @@ This project includes GitHub Actions workflows for automated building and testin
 
 ### Workflows
 
-- **CI (`ci.yml`)**: Runs on every PR
+- **CI (`ci.yml`)**: Runs on PRs to main
   - Tests on Linux, macOS, and Windows
   - Checks Rust formatting
   - Builds Nuxt frontend
   - Runs Rust tests
+  - **Optimized**: pnpm caching + concurrency control
 
-- **Release (`release.yml`)**: Triggered by tags (e.g., `v0.2.0`)
+- **Lint (`lint.yml`)**: Runs on PRs to main
+  - Rust: formatting & Clippy
+  - Frontend: TypeScript type checking
+  - **Optimized**: pnpm caching
+
+- **Release (`release.yml`)**: Triggered when a release is published
   - Builds platform-specific installers
   - Creates GitHub releases with artifacts
   - Supports: Linux (x64), macOS (Intel, ARM, Universal), Windows (x64)
+  - **Optimized**: Concurrency control + pnpm caching
 
 - **Updater (`updater.yml`)**: Generates auto-update manifests
   - Creates `latest.json` for Tauri updater
   - Publishes with each release
-
