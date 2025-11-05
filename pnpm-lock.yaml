@@ -9,29 +9,29 @@ importers:
   .:
     dependencies:
       '@tauri-apps/api':
-        specifier: ^2
+        specifier: 2.9.0
         version: 2.9.0
       '@tauri-apps/plugin-opener':
-        specifier: ^2
+        specifier: 2.5.2
         version: 2.5.2
       vue:
-        specifier: ^3.5.13
+        specifier: 3.5.22
         version: 3.5.22(typescript@5.6.3)
     devDependencies:
       '@nuxt/devtools':
-        specifier: ^3.0.1
+        specifier: 3.0.1
         version: 3.0.1(vite@7.2.0(jiti@2.6.1)(terser@5.44.1)(yaml@2.8.1))(vue@3.5.22(typescript@5.6.3))
       '@tauri-apps/cli':
-        specifier: ^2
+        specifier: 2.9.3
         version: 2.9.3
       nuxt:
-        specifier: ^4.2.0
+        specifier: 4.2.0
         version: 4.2.0(@parcel/watcher@2.5.1)(@vue/compiler-sfc@3.5.22)(db0@0.3.4)(ioredis@5.8.2)(magicast@0.5.1)(rollup@4.52.5)(terser@5.44.1)(typescript@5.6.3)(vite@7.2.0(jiti@2.6.1)(terser@5.44.1)(yaml@2.8.1))(vue-tsc@3.1.3(typescript@5.6.3))(yaml@2.8.1)
       typescript:
-        specifier: ~5.6.2
+        specifier: 5.6.3
         version: 5.6.3
       vue-tsc:
-        specifier: ^3.1.3
+        specifier: 3.1.3
         version: 3.1.3(typescript@5.6.3)
 
 packages:
@@ -3062,46 +3062,6 @@ packages:
     peerDependencies:
       vite: ^6.0.0 || ^7.0.0
       vue: ^3.5.0
-
-  vite@6.4.1:
-    resolution: {integrity: sha512-+Oxm7q9hDoLMyJOYfUYBuHQo+dkAloi33apOPP56pzj+vsdJDzr+j1NISE5pyaAuKL4A3UD34qd0lx5+kfKp2g==}
-    engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': ^18.0.0 || ^20.0.0 || >=22.0.0
-      jiti: '>=1.21.0'
-      less: '*'
-      lightningcss: ^1.21.0
-      sass: '*'
-      sass-embedded: '*'
-      stylus: '*'
-      sugarss: '*'
-      terser: ^5.16.0
-      tsx: ^4.8.1
-      yaml: ^2.4.2
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      jiti:
-        optional: true
-      less:
-        optional: true
-      lightningcss:
-        optional: true
-      sass:
-        optional: true
-      sass-embedded:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-      tsx:
-        optional: true
-      yaml:
-        optional: true
 
   vite@7.2.0:
     resolution: {integrity: sha512-C/Naxf8H0pBx1PA4BdpT+c/5wdqI9ILMdwjSMILw7tVIh3JsxzZqdeTLmmdaoh5MYUEOyBnM9K3o0DzoZ/fe+w==}
@@ -6575,7 +6535,7 @@ snapshots:
       debug: 4.4.3
       es-module-lexer: 1.7.0
       pathe: 2.0.3
-      vite: 6.4.1(jiti@2.6.1)(terser@5.44.1)(yaml@2.8.1)
+      vite: 7.2.0(jiti@2.6.1)(terser@5.44.1)(yaml@2.8.1)
     transitivePeerDependencies:
       - '@types/node'
       - jiti
@@ -6648,20 +6608,6 @@ snapshots:
       source-map-js: 1.2.1
       vite: 7.2.0(jiti@2.6.1)(terser@5.44.1)(yaml@2.8.1)
       vue: 3.5.22(typescript@5.6.3)
-
-  vite@6.4.1(jiti@2.6.1)(terser@5.44.1)(yaml@2.8.1):
-    dependencies:
-      esbuild: 0.25.12
-      fdir: 6.5.0(picomatch@4.0.3)
-      picomatch: 4.0.3
-      postcss: 8.5.6
-      rollup: 4.52.5
-      tinyglobby: 0.2.15
-    optionalDependencies:
-      fsevents: 2.3.3
-      jiti: 2.6.1
-      terser: 5.44.1
-      yaml: 2.8.1
 
   vite@7.2.0(jiti@2.6.1)(terser@5.44.1)(yaml@2.8.1):
     dependencies:
