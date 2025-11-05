@@ -30,18 +30,35 @@ booktracker/
 └── .output/             # Build output (gitignored)
 ```
 
-## Development
+## Getting Started
 
-```bash
-# Install dependencies
-pnpm install
+### Prerequisites
 
-# Run in development mode (Tauri + Nuxt)
-pnpm tauri:dev
+- **Node.js**: 24.11.0 (install via [nvm](https://github.com/nvm-sh/nvm#installing-and-updating))
+- **Rust**: Latest stable (install from [rustup.rs](https://rustup.rs/))
 
-# Or run Nuxt only (for frontend development)
-pnpm dev
-```
+### Setup
+
+1. **Enable Corepack** (one-time setup):
+   ```bash
+   corepack enable
+   ```
+   
+   This ensures you use the correct pnpm version (`10.11.0`) specified in `package.json`.
+
+2. **Install dependencies**:
+   ```bash
+   pnpm install
+   ```
+
+3. **Run the app**:
+   ```bash
+   # Full app (Tauri + Nuxt)
+   pnpm tauri:dev
+   
+   # Frontend only (for UI development)
+   pnpm dev
+   ```
 
 ## Building
 
@@ -86,3 +103,27 @@ This project includes GitHub Actions workflows for automated building and testin
 - **Updater (`updater.yml`)**: Generates auto-update manifests
   - Creates `latest.json` for Tauri updater
   - Publishes with each release
+
+### Workflow Optimizations
+
+- ✅ **pnpm Store Caching**: Faster dependency installs (~60% time savings)
+- ✅ **pnpm Version Management**: Version locked in `package.json` (`packageManager` field)
+- ✅ **Rust Caching**: Reuses compiled dependencies
+- ✅ **Concurrency Control**: Cancels redundant runs
+- ✅ **Parallel Jobs**: Lint and CI run independently
+
+## Additional Scripts
+
+```bash
+# Type checking
+pnpm typecheck
+
+# Rust formatting
+pnpm format:rust
+
+# Rust linting
+pnpm lint:rust
+
+# Rust tests
+pnpm test:rust
+```
