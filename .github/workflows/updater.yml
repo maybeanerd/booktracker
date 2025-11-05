@@ -1,0 +1,60 @@
+name: Tauri Updater
+
+on:
+  release:
+
+permissions:
+  contents: write
+
+jobs:
+  publish-updater:
+    name: Publish Updater JSON
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create updater JSON
+        run: |
+          cat > latest.json << EOF
+          {
+            "version": "${{ steps.version.outputs.VERSION }}",
+            "notes": "See release notes at https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}",
+            "pub_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "platforms": {
+              "darwin-x86_64": {
+                "signature": "",
+                "url": "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/booktracker_${{ steps.version.outputs.VERSION }}_x64.dmg"
+              },
+              "darwin-aarch64": {
+                "signature": "",
+                "url": "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/booktracker_${{ steps.version.outputs.VERSION }}_aarch64.dmg"
+              },
+              "linux-x86_64": {
+                "signature": "",
+                "url": "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/booktracker_${{ steps.version.outputs.VERSION }}_amd64.AppImage"
+              },
+              "windows-x86_64": {
+                "signature": "",
+                "url": "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/booktracker_${{ steps.version.outputs.VERSION }}_x64-setup.exe"
+              }
+            }
+          }
+          EOF
+
+      - name: Upload updater JSON as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: updater-json
+          path: latest.json
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: latest.json
+          token: ${{ secrets.GITHUB_TOKEN }}

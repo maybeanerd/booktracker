@@ -7,9 +7,13 @@
     "dev": "nuxt dev",
     "build": "nuxt generate",
     "preview": "nuxt preview",
+    "typecheck": "nuxt typecheck",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build"
+    "tauri:build": "tauri build",
+    "format:rust": "cd src-tauri && cargo fmt",
+    "lint:rust": "cd src-tauri && cargo clippy",
+    "test:rust": "cd src-tauri && cargo test"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",
