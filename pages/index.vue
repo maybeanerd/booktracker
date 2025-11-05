@@ -13,7 +13,7 @@ async function greet() {
 
 <template>
   <main class="container">
-    <h1>Welcome to Tauri + Nuxt</h1>
+    <h1>Welcome to the booktracker POC</h1>
 
     <div class="row">
       <a href="https://nuxt.com" target="_blank">
@@ -74,4 +74,3 @@ async function greet() {
   margin-right: 5px;
 }
 </style>
-
