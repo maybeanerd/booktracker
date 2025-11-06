@@ -125,6 +125,8 @@ Runs when you publish a GitHub release:
 
 ## Project Configuration
 
+### Tauri Configuration
+
 Android configuration is in `apps/frontend/src-tauri/tauri.conf.json`:
 
 ```json
@@ -136,6 +138,24 @@ Android configuration is in `apps/frontend/src-tauri/tauri.conf.json`:
   }
 }
 ```
+
+### Cargo Configuration
+
+Rust cross-compilation settings are in `apps/frontend/src-tauri/.cargo/config.toml`:
+
+```toml
+# Specifies the correct NDK linkers for each Android architecture
+[target.aarch64-linux-android]
+linker = "aarch64-linux-android-clang"
+
+[target.armv7-linux-androideabi]
+linker = "armv7a-linux-androideabi-clang"
+
+[target.x86_64-linux-android]
+linker = "x86_64-linux-android-clang"
+```
+
+This ensures Rust uses the Android NDK's linkers instead of the system linker when cross-compiling for Android.
 
 ### Permissions
 
