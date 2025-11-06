@@ -31,8 +31,8 @@ booktracker/
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) >= 24.11.0 (see `.nvmrc`)
-- [pnpm](https://pnpm.io/) >= 10.11.0
+- [Node.js](https://nodejs.org/) (version specified in `.nvmrc`)
+- [pnpm](https://pnpm.io/) (version specified in `package.json`)
 - [Rust](https://www.rust-lang.org/) (for Tauri)
 - [PostgreSQL](https://www.postgresql.org/) (or use Docker Compose)
 
@@ -175,7 +175,7 @@ docker-compose down
 
 ### Backend Docker Image
 
-The backend Dockerfile uses `node:22.17.1-slim` and pnpm monorepo support for efficient builds.
+The backend Dockerfile uses Node.js slim image and pnpm monorepo support for efficient builds.
 
 ```bash
 # Build (context is repo root, not apps/backend)
