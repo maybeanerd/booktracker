@@ -103,25 +103,17 @@ jobs:
         run: cargo test
         working-directory: apps/frontend/src-tauri
 
-      - name: Build Tauri app (desktop only)
-        if: matrix.platform != 'android'
-        working-directory: apps/frontend
-        run: |
-          # tauri build will run beforeBuildCommand (pnpm nuxt:build) automatically
-          pnpm tauri build --debug
-
       - name: Initialize Tauri Android project
         if: matrix.platform == 'android'
         working-directory: apps/frontend
         run: |
           pnpm tauri android init || echo "Project already initialized"
 
-      - name: Build Android (debug)
-        if: matrix.platform == 'android'
-        working-directory: apps/frontend
-        run: |
-          # tauri android build will run beforeBuildCommand (pnpm nuxt:build) automatically
-          pnpm tauri android build --debug || echo "Build may fail without signing - environment verified"
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        with:
+          projectPath: apps/frontend
+          args: ${{ matrix.target && format('--target {0} --debug', matrix.target) || '--debug' }}
 
   check-backend:
     name: Check Backend Migrations
