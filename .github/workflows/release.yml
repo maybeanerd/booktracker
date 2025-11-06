@@ -48,23 +48,11 @@ jobs:
             runner: windows-latest
             target: x86_64-pc-windows-msvc
 
-          # Android (ARM64)
+          # Android (ARM64 - covers 99%+ of modern devices)
           - platform: android
             arch: aarch64
             runner: ubuntu-latest
             target: aarch64-linux-android
-
-          # Android (ARMv7)
-          - platform: android
-            arch: armv7
-            runner: ubuntu-latest
-            target: armv7-linux-androideabi
-
-          # Android (x86_64)
-          - platform: android
-            arch: x86_64
-            runner: ubuntu-latest
-            target: x86_64-linux-android
 
     steps:
       - name: Checkout repository
@@ -145,7 +133,7 @@ jobs:
           TAURI_ANDROID_KEY_ALIAS: ${{ secrets.TAURI_ANDROID_KEY_ALIAS }}
           TAURI_ANDROID_KEY_PASSWORD: ${{ secrets.TAURI_ANDROID_KEY_PASSWORD }}
         run: |
-          pnpm tauri android build --target ${{ matrix.target }}
+          pnpm tauri android build --target aarch64
 
       - name: Upload Android APK
         if: matrix.platform == 'android'

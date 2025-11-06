@@ -115,7 +115,7 @@ jobs:
         if: matrix.platform == 'android'
         working-directory: apps/frontend
         run: |
-          pnpm tauri android build --target ${{ matrix.target }} --debug
+          pnpm tauri android build --target aarch64 --debug
 
       - name: Build Tauri app (desktop only)
         if: matrix.platform != 'android'
