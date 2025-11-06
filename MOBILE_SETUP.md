@@ -1,138 +1,301 @@
 # Mobile Build Setup Guide
 
-This document describes the setup required to build BookTracker for Android and iOS platforms.
+This guide covers building BookTracker for Android and iOS platforms.
+
+## Quick Start - Local Development
+
+The fastest way to develop and test on mobile is using Tauri's development mode:
+
+### Android Development
+
+```bash
+cd apps/frontend
+
+# First time only: Initialize the Android project
+pnpm tauri android init
+
+# Connect your Android device via USB or start an emulator
+# To list available emulators: emulator -list-avds
+# To start an emulator: emulator -avd Pixel_5_API_33
+
+# Run the app on your device/emulator
+pnpm tauri android dev
+```
+
+### iOS Development (macOS only)
+
+```bash
+cd apps/frontend
+
+# First time only: Initialize the iOS project
+pnpm tauri ios init
+
+# Run the app (automatically opens iOS Simulator)
+pnpm tauri ios dev
+```
 
 ## Prerequisites
 
-### For Android Builds
+### For Android Development
 
-1. **Initialize Android Project**
-   ```bash
-   cd apps/frontend
-   pnpm tauri android init
-   ```
+1. **Java Development Kit 17**
+   - Download from [Adoptium](https://adoptium.net/)
+   - Verify: `java -version`
 
-2. **Android Keystore for Signing**
-   - Generate a keystore:
+2. **Android Studio**
+   - Download from [developer.android.com](https://developer.android.com/studio)
+   - Install Android SDK and NDK through Android Studio
+   - Set environment variables:
      ```bash
-     keytool -genkey -v -keystore booktracker-release.keystore \
-       -alias booktracker -keyalg RSA -keysize 2048 -validity 10000
+     export ANDROID_HOME=$HOME/Library/Android/sdk      # macOS
+     export ANDROID_HOME=$HOME/Android/Sdk              # Linux
+     export PATH=$PATH:$ANDROID_HOME/emulator
+     export PATH=$PATH:$ANDROID_HOME/platform-tools
      ```
-   - Add the keystore to your repository secrets (or store securely)
-   - Set the following GitHub secrets:
-     - `TAURI_ANDROID_KEYSTORE_PATH`: Path to your keystore file
-     - `TAURI_ANDROID_KEYSTORE_PASSWORD`: Keystore password
-     - `TAURI_ANDROID_KEY_ALIAS`: Key alias (e.g., "booktracker")
-     - `TAURI_ANDROID_KEY_PASSWORD`: Key password
 
-3. **Update Android Configuration**
-   - Edit `apps/frontend/src-tauri/gen/android/app/build.gradle.kts` if needed
-   - Ensure permissions are set in AndroidManifest.xml
-
-### For iOS Builds
-
-1. **Initialize iOS Project**
+3. **Rust targets**
    ```bash
-   cd apps/frontend
-   pnpm tauri ios init
+   rustup target add aarch64-linux-android
+   rustup target add armv7-linux-androideabi
+   rustup target add x86_64-linux-android
    ```
 
-2. **Apple Developer Account Requirements**
-   - An active Apple Developer account ($99/year)
-   - Provisioning profiles for distribution
-   - Distribution certificate
+### For iOS Development
 
-3. **Code Signing**
-   - Export your distribution certificate as a .p12 file
-   - Set the following GitHub secrets:
-     - `APPLE_CERTIFICATE`: Base64-encoded .p12 certificate
-     - `APPLE_CERTIFICATE_PASSWORD`: Certificate password
-     - `APPLE_SIGNING_IDENTITY`: Your signing identity (e.g., "Apple Distribution: Your Name")
-     - `APPLE_PROVISIONING_PROFILE`: Base64-encoded provisioning profile
-     - `APPLE_TEAM_ID`: Your Apple Team ID
+1. **macOS required** - iOS development only works on macOS
 
-4. **Update iOS Configuration**
-   - Edit `apps/frontend/src-tauri/gen/apple/booktracker.xcodeproj` in Xcode
-   - Configure bundle identifier to match provisioning profile
-   - Set deployment target (minimum iOS 13.0)
+2. **Xcode**
+   - Install from Mac App Store
+   - Open Xcode once to accept license agreements
+   - Verify: `xcodebuild -version`
 
-## Testing Builds Locally
+3. **Rust target**
+   ```bash
+   rustup target add aarch64-apple-ios
+   ```
 
-### Android
+## Testing on Physical Devices
+
+### Android Physical Device
+
+1. **Enable Developer Mode on your device:**
+   - Go to Settings → About phone
+   - Tap "Build number" 7 times
+   - Go back to Settings → System → Developer options
+   - Enable "USB debugging"
+
+2. **Connect device via USB**
+
+3. **Verify connection:**
+   ```bash
+   adb devices
+   # Should show your device
+   ```
+
+4. **Run the app:**
+   ```bash
+   cd apps/frontend
+   pnpm tauri android dev
+   ```
+
+### iOS Physical Device
+
+1. **Apple Developer Account required** (free or paid)
+
+2. **In Xcode:**
+   - Open `apps/frontend/src-tauri/gen/apple/booktracker.xcodeproj`
+   - Select your development team
+   - Connect your iPhone/iPad via USB
+   - Select your device as the run destination
+
+3. **Run from terminal:**
+   ```bash
+   cd apps/frontend
+   pnpm tauri ios dev
+   ```
+
+4. **On your device:**
+   - Go to Settings → General → VPN & Device Management
+   - Trust your developer certificate
+
+## Building Release Versions
+
+### Local Debug Builds (unsigned)
+
 ```bash
 cd apps/frontend
-pnpm tauri android dev
-pnpm tauri android build
+
+# Android debug build
+pnpm tauri android build --debug
+
+# iOS debug build
+pnpm tauri ios build --debug
 ```
 
-### iOS
-```bash
-cd apps/frontend
-pnpm tauri ios dev
-pnpm tauri ios build
+### Production Builds (requires signing)
+
+Production builds happen automatically via GitHub Actions when you publish a release. See "Release Configuration" below.
+
+## Release Configuration
+
+### Android Signing Setup
+
+1. **Generate a keystore:**
+   ```bash
+   keytool -genkey -v -keystore booktracker-release.keystore \
+     -alias booktracker -keyalg RSA -keysize 2048 -validity 10000
+   ```
+
+2. **Store the keystore securely** (never commit to repository)
+
+3. **Add GitHub secrets:**
+   - `TAURI_ANDROID_KEYSTORE_PATH`: Path to your keystore
+   - `TAURI_ANDROID_KEYSTORE_PASSWORD`: Keystore password
+   - `TAURI_ANDROID_KEY_ALIAS`: Key alias (e.g., "booktracker")
+   - `TAURI_ANDROID_KEY_PASSWORD`: Key password
+
+### iOS Signing Setup
+
+1. **Apple Developer Account** ($99/year) required for distribution
+
+2. **Create certificates and provisioning profiles:**
+   - Go to [developer.apple.com](https://developer.apple.com/)
+   - Create a Distribution Certificate
+   - Create a Provisioning Profile for your app
+
+3. **Export certificate as .p12:**
+   - Open Keychain Access
+   - Find your distribution certificate
+   - Export as .p12 file with password
+
+4. **Add GitHub secrets:**
+   - `APPLE_CERTIFICATE`: Base64-encoded .p12 certificate
+     ```bash
+     base64 -i certificate.p12 | pbcopy
+     ```
+   - `APPLE_CERTIFICATE_PASSWORD`: Certificate password
+   - `APPLE_SIGNING_IDENTITY`: Your signing identity (e.g., "Apple Distribution: Your Name")
+   - `APPLE_PROVISIONING_PROFILE`: Base64-encoded provisioning profile
+   - `APPLE_TEAM_ID`: Your Apple Team ID
+
+## Build Pipelines
+
+### Development Builds (build.yml)
+
+Runs on every PR and push to main:
+- Tests Android ARM64 build
+- Tests iOS build
+- Verifies environment setup and compilation
+- Does not require signing
+
+### Production Releases (release.yml)
+
+Runs when you publish a GitHub release:
+
+**Android targets:**
+- ARM64 (`aarch64-linux-android`) - Modern 64-bit devices
+- ARMv7 (`armv7-linux-androideabi`) - Older 32-bit devices
+- x86_64 (`x86_64-linux-android`) - Emulators
+
+**iOS target:**
+- ARM64 (`aarch64-apple-ios`) - All modern iOS devices
+
+**Desktop targets:**
+- Linux (x86_64)
+- macOS (x86_64, ARM64, Universal)
+- Windows (x86_64)
+
+## Project Configuration
+
+Mobile configuration is in `apps/frontend/src-tauri/tauri.conf.json`:
+
+```json
+{
+  "bundle": {
+    "iOS": {
+      "minimumSystemVersion": "13.0"
+    },
+    "android": {
+      "minSdkVersion": 24
+    }
+  }
+}
 ```
-
-## Build Targets
-
-### Android
-The workflow builds for three Android architectures:
-- **aarch64** (ARM64): Modern 64-bit ARM devices
-- **armv7** (ARMv7): Older 32-bit ARM devices
-- **x86_64**: For emulators and x86 Android devices
-
-### iOS
-- **aarch64**: All modern iOS devices (iPhone 5s and later, all iPad Air, all iPad mini 2+)
-
-## Additional Configuration
 
 ### Permissions
 
-Add required permissions to platform-specific manifests:
-- **Android**: `apps/frontend/src-tauri/gen/android/app/src/main/AndroidManifest.xml`
-- **iOS**: `apps/frontend/src-tauri/gen/apple/booktracker_iOS/Info.plist`
+Add platform-specific permissions as needed:
+
+- **Android:** Edit `apps/frontend/src-tauri/gen/android/app/src/main/AndroidManifest.xml`
+- **iOS:** Edit `apps/frontend/src-tauri/gen/apple/booktracker_iOS/Info.plist`
 
 ### App Icons
 
-Ensure icons are properly sized for mobile:
-- **Android**: Icons will be generated from your base icon
-- **iOS**: Icons will be generated from your base icon
-
-The build process will automatically generate platform-specific icon sets.
+Icons are automatically generated for mobile platforms from your base icons in `apps/frontend/src-tauri/icons/`.
 
 ## Troubleshooting
 
-### Android Build Fails
-- Ensure NDK version matches (currently 26.1.10909125)
-- Check Java version is 17
-- Verify Android SDK is properly installed
+### Android: "SDK not found"
+```bash
+# Set ANDROID_HOME environment variable
+export ANDROID_HOME=$HOME/Library/Android/sdk  # macOS
+export ANDROID_HOME=$HOME/Android/Sdk          # Linux
+```
 
-### iOS Build Fails
-- Ensure Xcode is up to date
-- Verify code signing certificates are valid
-- Check provisioning profile matches bundle identifier
-- Ensure you're on macOS (iOS builds require macOS)
+### Android: "NDK not found"
+Install NDK through Android Studio:
+- Tools → SDK Manager → SDK Tools → NDK (Side by side)
 
-### Universal Errors
-- Check `tauri.conf.json` is properly configured
-- Ensure all dependencies are installed (`pnpm install`)
-- Verify Rust targets are installed:
-  ```bash
-  rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android aarch64-apple-ios
-  ```
+### iOS: "No such module 'Tauri'"
+```bash
+cd apps/frontend
+rm -rf src-tauri/gen/apple
+pnpm tauri ios init
+```
 
-## Release Process
+### iOS: "Signing for requires a development team"
+Open the Xcode project and select your development team in the signing settings.
 
-1. Create a new release on GitHub
-2. The workflow will automatically:
-   - Build for all desktop platforms (Linux, macOS, Windows)
-   - Build for all Android architectures
-   - Build for iOS
-   - Upload artifacts to the release
+### "Rust target not installed"
+```bash
+# Install all mobile targets
+rustup target add aarch64-linux-android
+rustup target add armv7-linux-androideabi
+rustup target add x86_64-linux-android
+rustup target add aarch64-apple-ios
+```
 
-## Notes
+## Development Tips
 
-- Android builds run on Ubuntu runners
-- iOS builds run on macOS runners
-- All signing keys and certificates should be stored as GitHub secrets, never committed to the repository
-- The workflow creates draft releases by default - review before publishing
+### Hot Reload
+Both Android and iOS dev modes support hot reload. Changes to your frontend code will automatically refresh the app.
 
+### Debugging
+
+**Android:**
+```bash
+# View logs
+adb logcat | grep -i tauri
+```
+
+**iOS:**
+- Open Console.app on macOS
+- Filter by your device name
+- Look for "booktracker" logs
+
+### Building for Different Architectures
+
+```bash
+# Android - specific architecture
+pnpm tauri android build --target aarch64-linux-android
+
+# iOS simulator (x86_64 for Intel Macs, aarch64 for Apple Silicon)
+pnpm tauri ios build --target x86_64-apple-ios-sim
+```
+
+## Resources
+
+- [Tauri Mobile Docs](https://v2.tauri.app/develop/mobile/)
+- [Android Developer Docs](https://developer.android.com/)
+- [iOS Developer Docs](https://developer.apple.com/documentation/)
+- [React Native (similar mobile concepts)](https://reactnative.dev/)

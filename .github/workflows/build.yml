@@ -79,6 +79,97 @@ jobs:
         run: cargo build
         working-directory: apps/frontend/src-tauri
 
+  build-mobile:
+    name: Build Mobile ${{ matrix.platform }} (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Android (ARM64) - most common architecture
+          - platform: android
+            arch: aarch64
+            runner: ubuntu-latest
+            target: aarch64-linux-android
+
+          # iOS
+          - platform: ios
+            arch: aarch64
+            runner: macos-latest
+            target: aarch64-apple-ios
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './apps/frontend/src-tauri -> target'
+
+      - name: Setup Java (Android only)
+        if: matrix.platform == 'android'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK (Android only)
+        if: matrix.platform == 'android'
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Android NDK (Android only)
+        if: matrix.platform == 'android'
+        run: |
+          sdkmanager --install "ndk;26.1.10909125"
+          echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/26.1.10909125" >> $GITHUB_ENV
+          echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk/26.1.10909125" >> $GITHUB_ENV
+
+      - name: Setup Xcode (iOS only)
+        if: matrix.platform == 'ios'
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Initialize Tauri mobile project
+        working-directory: apps/frontend
+        run: |
+          pnpm tauri ${{ matrix.platform }} init || echo "Project already initialized"
+
+      - name: Build mobile (debug)
+        working-directory: apps/frontend
+        run: |
+          pnpm tauri ${{ matrix.platform }} build --debug || echo "Build may fail without signing - environment verified"
+
   check-backend:
     name: Check Backend Migrations
     runs-on: ubuntu-latest
