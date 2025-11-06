@@ -199,5 +199,5 @@ jobs:
         uses: thollander/actions-comment-pull-request@v3
         with:
           filePath: summary.md
-          comment_tag: build-artifacts
+          comment-tag: build-artifacts
           mode: recreate
