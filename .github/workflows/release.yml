@@ -17,6 +17,9 @@ jobs:
   release:
     name: Release ${{ matrix.platform }} (${{ matrix.arch }})
     runs-on: ${{ matrix.runner }}
+    environment:
+      name: production
+      url: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
     strategy:
       fail-fast: false
       matrix:
@@ -152,6 +155,9 @@ jobs:
     name: Release macOS (universal)
     runs-on: macos-latest
     needs: release
+    environment:
+      name: production
+      url: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
 
     steps:
       - name: Checkout repository
