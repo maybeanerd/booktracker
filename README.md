@@ -259,4 +259,4 @@ The project includes several GitHub Actions workflows:
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please feel free to submit a Pull Request, open an issue with feature requests or bug report, or provide feedback on anything you feel strongly about.
