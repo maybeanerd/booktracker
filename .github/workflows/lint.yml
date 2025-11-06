@@ -49,8 +49,8 @@ jobs:
         run: cargo clippy -- -D warnings
         working-directory: apps/frontend/src-tauri
 
-  frontend-check:
-    name: Frontend Check
+  typescript-check:
+    name: TypeScript Lint & Type Check
     runs-on: ubuntu-latest
 
     steps:
@@ -89,6 +89,9 @@ jobs:
 
       - name: Lint backend
         run: pnpm --filter backend lint
+
+      - name: Type check backend
+        run: pnpm --filter backend build
 
   backend-migrations:
     name: Check Backend Migrations
