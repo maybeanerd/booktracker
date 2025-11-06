@@ -125,7 +125,14 @@ jobs:
           NDK_PATH="$ANDROID_SDK_ROOT/ndk/26.1.10909125"
           echo "ANDROID_NDK_HOME=$NDK_PATH" >> $GITHUB_ENV
           echo "NDK_HOME=$NDK_PATH" >> $GITHUB_ENV
-          echo "$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin" >> $GITHUB_PATH
+          TOOLCHAIN_BIN="$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin"
+          echo "$TOOLCHAIN_BIN" >> $GITHUB_PATH
+
+          # Create symbolic links with API level for the linkers
+          ln -sf "$TOOLCHAIN_BIN/aarch64-linux-android34-clang" "$TOOLCHAIN_BIN/aarch64-linux-android-clang"
+          ln -sf "$TOOLCHAIN_BIN/armv7a-linux-androideabi34-clang" "$TOOLCHAIN_BIN/armv7a-linux-androideabi-clang"
+          ln -sf "$TOOLCHAIN_BIN/x86_64-linux-android34-clang" "$TOOLCHAIN_BIN/x86_64-linux-android-clang"
+          ln -sf "$TOOLCHAIN_BIN/i686-linux-android34-clang" "$TOOLCHAIN_BIN/i686-linux-android-clang"
 
       - name: Install dependencies
         run: pnpm install
