@@ -118,12 +118,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Initialize Tauri Android project (Android only)
-        if: matrix.platform == 'android'
-        working-directory: apps/frontend
-        run: |
-          pnpm tauri android init || echo "Project already initialized"
-
       - name: Build Android app
         if: matrix.platform == 'android'
         working-directory: apps/frontend

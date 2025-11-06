@@ -105,12 +105,6 @@ jobs:
         run: cargo test
         working-directory: apps/frontend/src-tauri
 
-      - name: Initialize Tauri Android project
-        if: matrix.platform == 'android'
-        working-directory: apps/frontend
-        run: |
-          pnpm tauri android init || echo "Project already initialized"
-
       - name: Build Android app
         if: matrix.platform == 'android'
         working-directory: apps/frontend
