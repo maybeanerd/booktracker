@@ -24,6 +24,6 @@ RUN pnpm build
 # Expose port
 EXPOSE 3001
 
-# Start service
-CMD ["pnpm", "start:prod"]
+# Start service (run migrations first, then start)
+CMD ["sh", "-c", "pnpm db:migrate && pnpm start:prod"]
 

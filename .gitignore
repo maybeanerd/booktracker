@@ -42,14 +42,5 @@ coverage
 *.sln
 *.sw?
 
-# Environment variables
-.env
-.env.local
-.env.*.local
-
-# Database
-*.db
-*.sqlite
-
 # Docker
 .docker/

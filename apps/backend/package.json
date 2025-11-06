@@ -1,10 +1,10 @@
 {
-  "name": "backend",
+  "name": "@booktracker/backend",
   "version": "0.0.1",
-  "description": "",
+  "description": "BookTracker backend API",
   "author": "",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

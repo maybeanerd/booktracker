@@ -68,9 +68,13 @@ booktracker/
    Edit `apps/backend/.env` with your database credentials.
 
 5. **Run database migrations**
+   
+   For local development:
    ```bash
    pnpm db:migrate
    ```
+   
+   Note: When using Docker, migrations run automatically on container startup.
 
 ### Development
 
@@ -84,8 +88,6 @@ pnpm dev
 - **Frontend (Tauri):**
   ```bash
   pnpm dev:frontend
-  # or
-  pnpm tauri:dev
   ```
 
 - **Backend (NestJS):**
@@ -253,12 +255,8 @@ The project includes several GitHub Actions workflows:
 
 ## 📄 License
 
-[MIT](LICENSE)
+[AGPL-3.0](LICENSE)
 
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-
----
-
-Built with ✨ by [maybeanerd](https://github.com/maybeanerd)

@@ -6,7 +6,7 @@
   "packageManager": "pnpm@10.20.0",
   "scripts": {
     "dev": "pnpm --parallel -r dev",
-    "dev:frontend": "pnpm --filter frontend dev",
+    "dev:frontend": "pnpm --filter frontend tauri:dev",
     "dev:backend": "pnpm --filter backend start:dev",
     "build": "pnpm -r build",
     "build:frontend": "pnpm --filter frontend build",

@@ -113,13 +113,12 @@ jobs:
 
       - name: Check for missing migrations
         run: |
-          cd apps/backend
-          pnpm db:generate
-          if [ -n "$(git status --porcelain drizzle)" ]; then
+          pnpm --filter backend db:generate
+          if [ -n "$(git status --porcelain)" ]; then
             echo "❌ Error: Uncommitted database migrations detected!"
             echo "Please run 'pnpm db:generate' and commit the generated migrations."
-            git status drizzle
-            git diff drizzle
+            git status
+            git diff
             exit 1
           fi
           echo "✅ All migrations are up to date"
