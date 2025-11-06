@@ -130,17 +130,38 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build Tauri app
+      - name: Initialize Tauri Android project (Android only)
+        if: matrix.platform == 'android'
+        working-directory: apps/frontend
+        run: |
+          pnpm tauri android init || echo "Project already initialized"
+
+      - name: Build Android app
+        if: matrix.platform == 'android'
+        working-directory: apps/frontend
+        env:
+          TAURI_ANDROID_KEYSTORE_PATH: ${{ secrets.TAURI_ANDROID_KEYSTORE_PATH }}
+          TAURI_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.TAURI_ANDROID_KEYSTORE_PASSWORD }}
+          TAURI_ANDROID_KEY_ALIAS: ${{ secrets.TAURI_ANDROID_KEY_ALIAS }}
+          TAURI_ANDROID_KEY_PASSWORD: ${{ secrets.TAURI_ANDROID_KEY_PASSWORD }}
+        run: |
+          pnpm tauri android build --target ${{ matrix.target }}
+
+      - name: Upload Android APK
+        if: matrix.platform == 'android'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: apps/frontend/src-tauri/gen/android/**/release/*.apk
+          tag_name: ${{ github.ref_name }}
+          draft: true
+
+      - name: Build Tauri app (desktop only)
+        if: matrix.platform != 'android'
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-          # Android signing
-          TAURI_ANDROID_KEYSTORE_PATH: ${{ secrets.TAURI_ANDROID_KEYSTORE_PATH }}
-          TAURI_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.TAURI_ANDROID_KEYSTORE_PASSWORD }}
-          TAURI_ANDROID_KEY_ALIAS: ${{ secrets.TAURI_ANDROID_KEY_ALIAS }}
-          TAURI_ANDROID_KEY_PASSWORD: ${{ secrets.TAURI_ANDROID_KEY_PASSWORD }}
         with:
           projectPath: apps/frontend
           tauriScript: pnpm tauri

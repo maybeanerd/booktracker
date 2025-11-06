@@ -111,9 +111,16 @@ jobs:
         run: |
           pnpm tauri android init || echo "Project already initialized"
 
-      - name: Build Tauri app
+      - name: Build Android app
+        if: matrix.platform == 'android'
+        working-directory: apps/frontend
+        run: |
+          pnpm tauri android build --target ${{ matrix.target }} --debug
+
+      - name: Build Tauri app (desktop only)
+        if: matrix.platform != 'android'
         uses: tauri-apps/tauri-action@v0
         with:
           projectPath: apps/frontend
           tauriScript: pnpm tauri
-          args: ${{ matrix.target && format('--target {0} --debug', matrix.target) || '--debug' }}
+          args: --debug
