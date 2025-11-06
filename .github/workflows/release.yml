@@ -3,7 +3,6 @@ name: Tauri Release
 on:
   release:
     types: [published]
-  workflow_dispatch:
 
 # Restrict permissions to minimum required
 permissions:
