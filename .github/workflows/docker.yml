@@ -1,4 +1,4 @@
-name: Docker Backend
+name: Docker
 
 on:
   pull_request:
@@ -12,7 +12,7 @@ permissions:
   packages: write
 
 jobs:
-  build-backend-docker:
+  build-backend:
     name: Build Backend Docker Image
     runs-on: ubuntu-latest
 

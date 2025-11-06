@@ -4,12 +4,12 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "nuxt:dev": "nuxt dev",
-    "nuxt:build": "nuxt generate",
-    "nuxt:preview": "nuxt preview",
-    "nuxt:typecheck": "nuxt typecheck",
     "dev": "tauri dev",
-    "build": "tauri build"
+    "build": "tauri build",
+    "preview": "nuxt preview",
+    "typecheck": "nuxt typecheck",
+    "nuxt:dev": "nuxt dev",
+    "nuxt:build": "nuxt generate"
   },
   "dependencies": {
     "@tauri-apps/api": "2.9.0",
