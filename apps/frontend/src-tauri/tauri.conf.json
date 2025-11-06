@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "identifier": "com.maybeanerd.booktracker",
   "build": {
-    "beforeDevCommand": "pnpm dev",
+    "beforeDevCommand": "pnpm nuxt:dev",
     "devUrl": "http://localhost:3000",
     "beforeBuildCommand": "pnpm build",
     "frontendDist": "../.output/public"
