@@ -11,92 +11,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-frontend:
-    name: Build Frontend on ${{ matrix.platform }}
-    runs-on: ${{ matrix.platform }}
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [ubuntu-latest, macos-latest, windows-latest]
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: './apps/frontend/src-tauri -> target'
-
-      - name: Install dependencies (Ubuntu only)
-        if: matrix.platform == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Generate Nuxt types
-        run: pnpm --filter frontend nuxt prepare
-
-      - name: Build Nuxt frontend
-        run: pnpm build:frontend
-
-      - name: Check Rust formatting
-        run: cargo fmt --all --check
-        working-directory: apps/frontend/src-tauri
-
-      - name: Run Rust tests
-        run: cargo test
-        working-directory: apps/frontend/src-tauri
-
-      - name: Build Rust (debug)
-        run: cargo build
-        working-directory: apps/frontend/src-tauri
-
-  build-mobile:
-    name: Build Mobile ${{ matrix.platform }} (${{ matrix.arch }})
+  build:
+    name: Build ${{ matrix.platform }}${{ matrix.target && format(' ({0})', matrix.target) || '' }}
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          # Android (ARM64) - most common architecture
+          # Desktop platforms
+          - platform: linux
+            runner: ubuntu-latest
+          - platform: macos
+            runner: macos-latest
+          - platform: windows
+            runner: windows-latest
+
+          # Mobile platforms
           - platform: android
-            arch: aarch64
             runner: ubuntu-latest
             target: aarch64-linux-android
-
-          # iOS
-          - platform: ios
-            arch: aarch64
-            runner: macos-latest
-            target: aarch64-apple-ios
 
     steps:
       - name: Checkout repository
@@ -126,12 +59,18 @@ jobs:
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.target }}
+          targets: ${{ matrix.target || '' }}
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './apps/frontend/src-tauri -> target'
+
+      - name: Install dependencies (Linux only)
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
       - name: Setup Java (Android only)
         if: matrix.platform == 'android'
@@ -151,24 +90,43 @@ jobs:
           echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/26.1.10909125" >> $GITHUB_ENV
           echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk/26.1.10909125" >> $GITHUB_ENV
 
-      - name: Setup Xcode (iOS only)
-        if: matrix.platform == 'ios'
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: latest-stable
-
       - name: Install dependencies
         run: pnpm install
 
-      - name: Initialize Tauri mobile project
-        working-directory: apps/frontend
-        run: |
-          pnpm tauri ${{ matrix.platform }} init || echo "Project already initialized"
+      - name: Generate Nuxt types (desktop only)
+        if: matrix.platform != 'android'
+        run: pnpm --filter frontend nuxt prepare
 
-      - name: Build mobile (debug)
+      - name: Build Nuxt frontend (desktop only)
+        if: matrix.platform != 'android'
+        run: pnpm build:frontend
+
+      - name: Check Rust formatting (desktop only)
+        if: matrix.platform != 'android'
+        run: cargo fmt --all --check
+        working-directory: apps/frontend/src-tauri
+
+      - name: Run Rust tests (desktop only)
+        if: matrix.platform != 'android'
+        run: cargo test
+        working-directory: apps/frontend/src-tauri
+
+      - name: Build Rust (desktop only)
+        if: matrix.platform != 'android'
+        run: cargo build
+        working-directory: apps/frontend/src-tauri
+
+      - name: Initialize Tauri Android project
+        if: matrix.platform == 'android'
         working-directory: apps/frontend
         run: |
-          pnpm tauri ${{ matrix.platform }} build --debug || echo "Build may fail without signing - environment verified"
+          pnpm tauri android init || echo "Project already initialized"
+
+      - name: Build Android (debug)
+        if: matrix.platform == 'android'
+        working-directory: apps/frontend
+        run: |
+          pnpm tauri android build --debug || echo "Build may fail without signing - environment verified"
 
   check-backend:
     name: Check Backend Migrations
