@@ -50,8 +50,23 @@ jobs:
         working-directory: apps/frontend/src-tauri
 
   typescript-check:
-    name: TypeScript Lint & Type Check
+    name: ${{ matrix.name }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Frontend Lint & Type Check
+            workspace: frontend
+            commands: |
+              pnpm --filter frontend nuxt prepare
+              pnpm --filter frontend nuxt typecheck
+          
+          - name: Backend Lint & Type Check
+            workspace: backend
+            commands: |
+              pnpm --filter backend lint
+              pnpm --filter backend build
 
     steps:
       - name: Checkout repository
@@ -79,19 +94,10 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --filter ${{ matrix.workspace }}
 
-      - name: Generate Nuxt types
-        run: pnpm --filter frontend nuxt prepare
-
-      - name: Type check frontend
-        run: pnpm --filter frontend nuxt typecheck
-
-      - name: Lint backend
-        run: pnpm --filter backend lint
-
-      - name: Type check backend
-        run: pnpm --filter backend build
+      - name: Lint & Type check
+        run: ${{ matrix.commands }}
 
   backend-migrations:
     name: Check Backend Migrations
