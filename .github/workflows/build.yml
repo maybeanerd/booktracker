@@ -198,6 +198,6 @@ jobs:
       - name: Comment on PR
         uses: thollander/actions-comment-pull-request@v3
         with:
-          filePath: summary.md
+          file-path: summary.md
           comment-tag: build-artifacts
           mode: recreate
