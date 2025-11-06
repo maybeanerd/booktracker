@@ -113,6 +113,7 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         with:
           projectPath: apps/frontend
+          tauriScript: pnpm tauri
           args: ${{ matrix.target && format('--target {0} --debug', matrix.target) || '--debug' }}
 
   check-backend:
