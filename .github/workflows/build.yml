@@ -93,14 +93,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Generate Nuxt types (desktop only)
-        if: matrix.platform != 'android'
-        run: pnpm --filter frontend nuxt prepare
-
-      - name: Build Nuxt frontend (desktop only)
-        if: matrix.platform != 'android'
-        run: pnpm build:frontend
-
       - name: Check Rust formatting (desktop only)
         if: matrix.platform != 'android'
         run: cargo fmt --all --check
@@ -111,10 +103,12 @@ jobs:
         run: cargo test
         working-directory: apps/frontend/src-tauri
 
-      - name: Build Rust (desktop only)
+      - name: Build Tauri app (desktop only)
         if: matrix.platform != 'android'
-        run: cargo build
-        working-directory: apps/frontend/src-tauri
+        working-directory: apps/frontend
+        run: |
+          # tauri build will run beforeBuildCommand (pnpm nuxt:build) automatically
+          pnpm tauri build --debug
 
       - name: Initialize Tauri Android project
         if: matrix.platform == 'android'
@@ -126,6 +120,7 @@ jobs:
         if: matrix.platform == 'android'
         working-directory: apps/frontend
         run: |
+          # tauri android build will run beforeBuildCommand (pnpm nuxt:build) automatically
           pnpm tauri android build --debug || echo "Build may fail without signing - environment verified"
 
   check-backend:
