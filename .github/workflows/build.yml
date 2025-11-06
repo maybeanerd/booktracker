@@ -118,3 +118,86 @@ jobs:
           projectPath: apps/frontend
           tauriScript: pnpm tauri
           args: --debug
+
+      - name: Upload Android APK
+        if: matrix.platform == 'android'
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-${{ matrix.target }}
+          path: apps/frontend/src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+          if-no-files-found: error
+
+      - name: Upload Desktop builds
+        if: matrix.platform != 'android'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}-build
+          path: |
+            apps/frontend/src-tauri/target/debug/bundle/**/*
+            !apps/frontend/src-tauri/target/debug/bundle/**/*.dSYM/**
+          if-no-files-found: error
+
+  comment-pr:
+    name: Comment build info on PR
+    if: github.event_name == 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create build summary
+        id: summary
+        run: |
+          echo "## 📦 Build Artifacts" > summary.md
+          echo "" >> summary.md
+          echo "Build completed successfully for all platforms!" >> summary.md
+          echo "" >> summary.md
+          echo "### 📱 Mobile Builds" >> summary.md
+          echo "" >> summary.md
+
+          if [ -d "artifacts/android-apk-aarch64-linux-android" ]; then
+            for apk in artifacts/android-apk-aarch64-linux-android/**/*.apk; do
+              if [ -f "$apk" ]; then
+                size=$(du -h "$apk" | cut -f1)
+                name=$(basename "$apk")
+                echo "- **Android ARM64**: \`$name\` ($size)" >> summary.md
+              fi
+            done
+          else
+            echo "- Android build not found" >> summary.md
+          fi
+
+          echo "" >> summary.md
+          echo "### 🖥️ Desktop Builds" >> summary.md
+          echo "" >> summary.md
+
+          for platform in linux macos windows; do
+            if [ -d "artifacts/${platform}-build" ]; then
+              echo "#### ${platform^}" >> summary.md
+              find "artifacts/${platform}-build" -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.dmg" -o -name "*.app" -o -name "*.msi" -o -name "*.exe" \) | while read file; do
+                if [ -f "$file" ]; then
+                  size=$(du -h "$file" | cut -f1)
+                  name=$(basename "$file")
+                  echo "- \`$name\` ($size)" >> summary.md
+                fi
+              done
+              echo "" >> summary.md
+            fi
+          done
+
+          echo "" >> summary.md
+          echo "---" >> summary.md
+          echo "_Artifacts are available for download from the [Actions run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})_" >> summary.md
+
+      - name: Comment on PR
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          filePath: summary.md
+          comment_tag: build-artifacts
+          mode: recreate
