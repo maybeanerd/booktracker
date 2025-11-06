@@ -6,7 +6,7 @@
   "build": {
     "beforeDevCommand": "pnpm nuxt:dev",
     "devUrl": "http://localhost:3000",
-    "beforeBuildCommand": "pnpm build",
+    "beforeBuildCommand": "pnpm nuxt:build",
     "frontendDist": "../.output/public"
   },
   "app": {
