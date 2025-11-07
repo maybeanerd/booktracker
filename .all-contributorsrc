@@ -1,0 +1,29 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "maybeanerd",
+      "name": "Sebastian Di Luzio",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18548570?v=4",
+      "profile": "https://diluz.io",
+      "contributions": [
+        "code",
+        "doc",
+        "tool",
+        "maintenance"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "booktracker",
+  "projectOwner": "maybeanerd"
+}
