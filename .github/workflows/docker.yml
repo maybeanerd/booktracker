@@ -13,8 +13,6 @@ jobs:
   build-backend:
     name: Build Backend Docker Image
     runs-on: ubuntu-latest
-    environment:
-      name: ${{ github.event_name == 'release' && 'production' || null }}
 
     steps:
       - name: Checkout repository
