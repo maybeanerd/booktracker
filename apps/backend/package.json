@@ -1,7 +1,7 @@
 {
   "name": "@booktracker/backend",
   "version": "0.0.1",
-  "description": "BookTracker backend API",
+  "description": "booktracker backend API",
   "author": "",
   "private": true,
   "license": "AGPL-3.0",
