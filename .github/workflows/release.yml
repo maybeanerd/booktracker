@@ -1,9 +1,8 @@
-name: Release
+name: Tauri Release
 
 on:
   release:
     types: [published]
-  workflow_dispatch:
 
 # Restrict permissions to minimum required
 permissions:
@@ -18,6 +17,9 @@ jobs:
   release:
     name: Release ${{ matrix.platform }} (${{ matrix.arch }})
     runs-on: ${{ matrix.runner }}
+    environment:
+      name: production
+      url: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
     strategy:
       fail-fast: false
       matrix:
@@ -45,6 +47,12 @@ jobs:
             arch: x86_64
             runner: windows-latest
             target: x86_64-pc-windows-msvc
+
+          # Android (ARM64 - covers 99%+ of modern devices)
+          - platform: android
+            arch: aarch64
+            runner: ubuntu-latest
+            target: aarch64-linux-android
 
     steps:
       - name: Checkout repository
@@ -79,7 +87,7 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: './src-tauri -> target'
+          workspaces: './apps/frontend/src-tauri -> target'
 
       - name: Install dependencies (Ubuntu only)
         if: matrix.platform == 'linux'
@@ -87,16 +95,58 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
-      - name: Install frontend dependencies
+      - name: Setup Java (Android only)
+        if: matrix.platform == 'android'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK (Android only)
+        if: matrix.platform == 'android'
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Android NDK (Android only)
+        if: matrix.platform == 'android'
+        run: |
+          sdkmanager --install "ndk;26.1.10909125"
+          NDK_PATH="$ANDROID_SDK_ROOT/ndk/26.1.10909125"
+          echo "ANDROID_NDK_HOME=$NDK_PATH" >> $GITHUB_ENV
+          echo "NDK_HOME=$NDK_PATH" >> $GITHUB_ENV
+          echo "$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
         run: pnpm install
 
-      - name: Build Tauri app
+      - name: Build Android app
+        if: matrix.platform == 'android'
+        working-directory: apps/frontend
+        env:
+          TAURI_ANDROID_KEYSTORE_PATH: ${{ secrets.TAURI_ANDROID_KEYSTORE_PATH }}
+          TAURI_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.TAURI_ANDROID_KEYSTORE_PASSWORD }}
+          TAURI_ANDROID_KEY_ALIAS: ${{ secrets.TAURI_ANDROID_KEY_ALIAS }}
+          TAURI_ANDROID_KEY_PASSWORD: ${{ secrets.TAURI_ANDROID_KEY_PASSWORD }}
+        run: |
+          pnpm tauri android build --target aarch64
+
+      - name: Upload Android APK
+        if: matrix.platform == 'android'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: apps/frontend/src-tauri/gen/android/**/release/*.apk
+          tag_name: ${{ github.ref_name }}
+          draft: true
+
+      - name: Build Tauri app (desktop only)
+        if: matrix.platform != 'android'
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
+          projectPath: apps/frontend
+          tauriScript: pnpm tauri
           tagName: ${{ github.ref_name }}
           releaseName: 'BookTracker ${{ github.ref_name }}'
           releaseBody: 'See the assets to download and install this version.'
@@ -109,6 +159,9 @@ jobs:
     name: Release macOS (universal)
     runs-on: macos-latest
     needs: release
+    environment:
+      name: production
+      url: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
 
     steps:
       - name: Checkout repository
@@ -143,9 +196,9 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: './src-tauri -> target'
+          workspaces: './apps/frontend/src-tauri -> target'
 
-      - name: Install frontend dependencies
+      - name: Install dependencies
         run: pnpm install
 
       - name: Build Tauri app (Universal)
@@ -155,6 +208,8 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
+          projectPath: apps/frontend
+          tauriScript: pnpm tauri
           tagName: ${{ github.ref_name }}
           releaseName: 'BookTracker ${{ github.ref_name }}'
           releaseBody: 'See the assets to download and install this version.'

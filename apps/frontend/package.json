@@ -1,0 +1,25 @@
+{
+  "name": "@booktracker/frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "preview": "nuxt preview",
+    "typecheck": "nuxt typecheck",
+    "nuxt:dev": "nuxt dev",
+    "nuxt:build": "nuxt generate"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "2.9.0",
+    "@tauri-apps/plugin-opener": "2.5.2"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "3.0.1",
+    "@tauri-apps/cli": "2.9.3",
+    "nuxt": "4.2.0",
+    "typescript": "5.9.3",
+    "vue-tsc": "3.1.3"
+  }
+}

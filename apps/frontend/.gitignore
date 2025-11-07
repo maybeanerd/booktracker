@@ -18,19 +18,6 @@ dist-ssr
 .nitro
 .cache
 
-# NestJS build output
-dist
-coverage
-
-# Database
-*.db
-*.sqlite
-
-# Environment
-.env
-.env.local
-.env.*.local
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -42,5 +29,3 @@ coverage
 *.sln
 *.sw?
 
-# Docker
-.docker/

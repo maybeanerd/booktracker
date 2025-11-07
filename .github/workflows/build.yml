@@ -1,0 +1,171 @@
+name: Build
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }}${{ matrix.target && format(' ({0})', matrix.target) || '' }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Desktop platforms
+          - platform: linux
+            runner: ubuntu-latest
+          - platform: macos
+            runner: macos-latest
+          - platform: windows
+            runner: windows-latest
+
+          # Mobile platforms
+          - platform: android
+            runner: ubuntu-latest
+            target: aarch64-linux-android
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target || '' }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './apps/frontend/src-tauri -> target'
+
+      - name: Install dependencies (Linux only)
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Setup Java (Android only)
+        if: matrix.platform == 'android'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK (Android only)
+        if: matrix.platform == 'android'
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Android NDK (Android only)
+        if: matrix.platform == 'android'
+        run: |
+          sdkmanager --install "ndk;26.1.10909125"
+          NDK_PATH="$ANDROID_SDK_ROOT/ndk/26.1.10909125"
+          echo "ANDROID_NDK_HOME=$NDK_PATH" >> $GITHUB_ENV
+          echo "NDK_HOME=$NDK_PATH" >> $GITHUB_ENV
+          echo "$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Check Rust formatting (desktop only)
+        if: matrix.platform != 'android'
+        run: cargo fmt --all --check
+        working-directory: apps/frontend/src-tauri
+
+      - name: Run Rust tests (desktop only)
+        if: matrix.platform != 'android'
+        run: cargo test
+        working-directory: apps/frontend/src-tauri
+
+      - name: Build Android app
+        if: matrix.platform == 'android'
+        working-directory: apps/frontend
+        run: |
+          pnpm tauri android build --target aarch64 --debug
+
+      - name: Build Tauri app (desktop only)
+        if: matrix.platform != 'android'
+        uses: tauri-apps/tauri-action@v0
+        with:
+          projectPath: apps/frontend
+          tauriScript: pnpm tauri
+          args: --debug
+
+      - name: Upload Android APK
+        if: matrix.platform == 'android'
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-${{ matrix.target }}
+          path: apps/frontend/src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+          if-no-files-found: error
+
+      - name: Upload Desktop builds
+        if: matrix.platform != 'android'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}-build
+          path: |
+            apps/frontend/src-tauri/target/debug/bundle/**/*
+            !apps/frontend/src-tauri/target/debug/bundle/**/*.dSYM/**
+          if-no-files-found: error
+
+  comment-pr:
+    name: Comment build info on PR
+    if: github.event_name == 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create build summary
+        id: summary
+        run: |
+          echo "Build artifacts are ready for testing:" > summary.md
+          echo "" >> summary.md
+          echo "- 📱 Android (ARM64)" >> summary.md
+          echo "- 🐧 Linux (AppImage, .deb)" >> summary.md
+          echo "- 🍎 macOS (.dmg)" >> summary.md
+          echo "- 🪟 Windows (.msi, .exe)" >> summary.md
+          echo "" >> summary.md
+          echo "[📥 Download artifacts](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts)" >> summary.md
+
+      - name: Comment on PR
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          file-path: summary.md
+          comment-tag: build-artifacts
+          mode: recreate

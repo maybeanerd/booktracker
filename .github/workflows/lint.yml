@@ -3,6 +3,8 @@ name: Lint
 on:
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
 
 jobs:
   rust-lint:
@@ -21,7 +23,7 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: './src-tauri -> target'
+          workspaces: './apps/frontend/src-tauri -> target'
 
       - name: Install dependencies (Ubuntu)
         run: |
@@ -41,14 +43,64 @@ jobs:
 
       - name: Check formatting
         run: cargo fmt --all --check
-        working-directory: src-tauri
+        working-directory: apps/frontend/src-tauri
 
       - name: Run Clippy
         run: cargo clippy -- -D warnings
-        working-directory: src-tauri
+        working-directory: apps/frontend/src-tauri
 
-  frontend-check:
-    name: Frontend Check
+  typescript-check:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Frontend Lint & Type Check
+            workspace: frontend
+            commands: |
+              pnpm --filter frontend nuxt prepare
+              pnpm --filter frontend nuxt typecheck
+          
+          - name: Backend Lint & Type Check
+            workspace: backend
+            commands: |
+              pnpm --filter backend lint
+              pnpm --filter backend build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --filter ${{ matrix.workspace }}
+
+      - name: Lint & Type check
+        run: ${{ matrix.commands }}
+
+  backend-migrations:
+    name: Check Backend Migrations
     runs-on: ubuntu-latest
 
     steps:
@@ -77,10 +129,16 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --filter backend
 
-      - name: Generate Nuxt types
-        run: pnpm nuxt prepare
-
-      - name: Type check
-        run: pnpm nuxt typecheck
+      - name: Check for missing migrations
+        run: |
+          pnpm --filter backend db:generate
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "❌ Error: Uncommitted database migrations detected!"
+            echo "Please run 'pnpm db:generate' and commit the generated migrations."
+            git status
+            git diff
+            exit 1
+          fi
+          echo "✅ All migrations are up to date"
