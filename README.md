@@ -103,6 +103,19 @@ pnpm dev
   pnpm db:studio
   ```
 
+#### ❄️ Nix Flake
+
+This project includes a Nix flake for a reproducible development environment.
+
+To enter the Nix shell:
+```bash
+nix develop
+```
+
+This will drop you in a Bash shell with Node, Pnpm, Rust & Tauri.
+
+You can also use direnv to automatically enter the Nix shell when you `cd` into the project. (More info: https://direnv.net/)
+
 ## 🏗️ Building
 
 ### Frontend (Tauri App)
