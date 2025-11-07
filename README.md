@@ -1,18 +1,18 @@
 # BookTracker
 
-A modern book tracking application built with Tauri, Nuxt 3, and NestJS.
+A modern book tracking application built with Tauri, Nuxt, and NestJS.
 
 ## 📁 Project Structure
 
 This is a pnpm monorepo containing:
 
-- **`apps/frontend`** - Tauri desktop application with Nuxt 3
+- **`apps/frontend`** - Tauri application with Nuxt
 - **`apps/backend`** - NestJS REST API with Drizzle ORM
 
 ```
 booktracker/
 ├── apps/
-│   ├── frontend/           # Tauri + Nuxt 3 desktop app
+│   ├── frontend/           # Tauri + Nuxt app
 │   │   ├── src-tauri/      # Rust backend for Tauri
 │   │   ├── pages/          # Nuxt pages
 │   │   ├── components/     # Vue components
@@ -85,7 +85,7 @@ pnpm dev
 
 **Or run individually:**
 
-- **Frontend (Tauri):**
+- **Frontend (Tauri app):**
   ```bash
   pnpm dev:frontend
   ```
@@ -102,14 +102,14 @@ pnpm dev
 
 ## 🏗️ Building
 
-### Frontend (Desktop App)
+### Frontend (Tauri App)
 
 ```bash
-# Build for your current platform
-pnpm tauri:build
-
-# Or build just the Nuxt frontend
+# Build the app for your current platform
 pnpm build:frontend
+
+# The frontend build script runs: tauri build
+# Which includes building Nuxt and bundling the app
 ```
 
 ### Backend (API)
@@ -203,10 +203,8 @@ docker run -p 3001:3001 \
 
 | Command | Description |
 |---------|-------------|
-| `pnpm dev:frontend` | Run Nuxt dev server |
-| `pnpm build:frontend` | Build Nuxt for production |
-| `pnpm tauri:dev` | Run Tauri in dev mode |
-| `pnpm tauri:build` | Build Tauri desktop app |
+| `pnpm dev:frontend` | Run Tauri app in dev mode |
+| `pnpm build:frontend` | Build Tauri app for production |
 | `pnpm format:rust` | Format Rust code |
 | `pnpm lint:rust` | Lint Rust code |
 | `pnpm test:rust` | Run Rust tests |
@@ -231,15 +229,15 @@ The project includes several GitHub Actions workflows:
 - **`build.yml`** - Builds frontend and backend on PR/push
 - **`lint.yml`** - Runs linting and type checking
 - **`release.yml`** - Creates Tauri releases for all platforms
-- **`docker-backend.yml`** - Builds and pushes backend Docker image
+- **`docker.yml`** - Builds and pushes backend Docker image
 - **`updater.yml`** - Generates Tauri updater JSON
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **[Tauri](https://tauri.app/)** - Desktop app framework
-- **[Nuxt 3](https://nuxt.com/)** - Vue.js framework
-- **[Vue 3](https://vuejs.org/)** - Progressive JavaScript framework
+- **[Tauri](https://tauri.app/)** - Cross-platform app framework
+- **[Nuxt](https://nuxt.com/)** - Vue.js framework
+- **[Vue](https://vuejs.org/)** - Progressive JavaScript framework
 - **[TypeScript](https://www.typescriptlang.org/)** - Type-safe JavaScript
 
 ### Backend

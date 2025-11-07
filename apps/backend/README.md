@@ -6,8 +6,8 @@ NestJS backend API for BookTracker, using Drizzle ORM with PostgreSQL.
 
 ### Prerequisites
 
-- Node.js 24.11.0
-- PostgreSQL 16+
+- Node.js (version specified in `.nvmrc`)
+- PostgreSQL
 
 ### Setup
 
@@ -30,8 +30,11 @@ NestJS backend API for BookTracker, using Drizzle ORM with PostgreSQL.
 ### Development
 
 ```bash
-# Run dev server
-pnpm start:dev
+# Run dev server (from backend directory)
+pnpm dev
+
+# Or from root directory
+pnpm dev:backend
 
 # Run tests
 pnpm test
@@ -83,7 +86,7 @@ docker-compose up backend
 
 ## Tech Stack
 
-- **Framework**: NestJS 11
+- **Framework**: NestJS
 - **ORM**: Drizzle ORM
 - **Database**: PostgreSQL
 - **Language**: TypeScript

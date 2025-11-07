@@ -1,22 +1,22 @@
 # BookTracker Frontend
 
-Nuxt 4 frontend and Tauri 2 desktop application for BookTracker.
+Nuxt frontend and Tauri application for BookTracker.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 24.11.0
-- Rust (latest stable) - for desktop app only
+- Node.js (version specified in `.nvmrc`)
+- Rust (latest stable) - for Tauri
 
 ### Development
 
 ```bash
-# Run Nuxt dev server (web only)
+# Run Tauri dev (app with Nuxt dev server)
 pnpm dev
 
-# Run Tauri dev (desktop app)
-pnpm tauri:dev
+# Run Nuxt dev server only (web only, without Tauri)
+pnpm nuxt:dev
 
 # Type check
 pnpm typecheck
@@ -25,20 +25,20 @@ pnpm typecheck
 ### Building
 
 ```bash
-# Build for web
-pnpm build
+# Build Nuxt for static generation
+pnpm nuxt:build
 
-# Build desktop app
-pnpm tauri:build
+# Build app for your current platform (includes Nuxt build)
+pnpm build
 ```
 
-Desktop installers will be created in `src-tauri/target/release/bundle/`.
+Installers will be created in `src-tauri/target/release/bundle/`.
 
 ## Tech Stack
 
-- **Framework**: Nuxt 4
-- **UI Library**: Vue 3
-- **Desktop Runtime**: Tauri 2
+- **Framework**: Nuxt
+- **UI Library**: Vue
+- **Runtime**: Tauri
 - **Language**: TypeScript
 
 ## Project Structure
