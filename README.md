@@ -1,6 +1,6 @@
 # BookTracker
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 A modern book tracking application built with Tauri, Nuxt, and NestJS.
@@ -286,6 +286,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://diluz.io"><img src="https://avatars.githubusercontent.com/u/18548570?v=4?s=100" width="100px;" alt="Sebastian Di Luzio"/><br /><sub><b>Sebastian Di Luzio</b></sub></a><br /><a href="https://github.com/maybeanerd/booktracker/commits?author=maybeanerd" title="Code">💻</a> <a href="https://github.com/maybeanerd/booktracker/commits?author=maybeanerd" title="Documentation">📖</a> <a href="#tool-maybeanerd" title="Tools">🔧</a> <a href="#maintenance-maybeanerd" title="Maintenance">🚧</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/tiborpilz"><img src="https://avatars.githubusercontent.com/u/915045?v=4?s=100" width="100px;" alt="Tibor Pilz"/><br /><sub><b>Tibor Pilz</b></sub></a><br /><a href="https://github.com/maybeanerd/booktracker/commits?author=tiborpilz" title="Code">💻</a> <a href="https://github.com/maybeanerd/booktracker/commits?author=tiborpilz" title="Documentation">📖</a> <a href="#tool-tiborpilz" title="Tools">🔧</a></td>
     </tr>
   </tbody>
 </table>
