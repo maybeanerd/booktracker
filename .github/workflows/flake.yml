@@ -1,0 +1,27 @@
+name: Nix Flake
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+jobs:
+  check-devshell:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Speed up Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Check flake
+        run: nix flake check
+
+      - name: Build devshell
+        run: nix build .#devShells.${{ matrix.os == 'ubuntu-latest' && 'x86_64-linux' || 'aarch64-darwin' }}.default
