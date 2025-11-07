@@ -1,0 +1,31 @@
+name: Nix Flake
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+jobs:
+  check-devshell:
+    runs-on: ${{ matrix.os.gh-os }}
+    strategy:
+      matrix:
+        os:
+          - gh-os: ubuntu-latest
+            nix-system: x86_64-linux
+          - gh-os: macos-latest
+            nix-system: aarch64-darwin
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Nix
+        uses: DeterminateSystems/nix-installer-action@v20
+
+      - name: Speed up Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@v13
+
+      - name: Check flake
+        run: nix flake check
+
+      - name: Build devshell
+        run: nix build .#devShells.${{ matrix.os.nix-system }}.default
