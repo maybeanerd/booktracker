@@ -118,7 +118,7 @@ jobs:
 
       - name: Upload Android APK
         if: matrix.platform == 'android'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: android-apk-${{ matrix.target }}
           path: apps/frontend/src-tauri/gen/android/app/build/outputs/apk/**/*.apk
@@ -126,7 +126,7 @@ jobs:
 
       - name: Upload Desktop builds
         if: matrix.platform != 'android'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.platform }}-build
           path: |
