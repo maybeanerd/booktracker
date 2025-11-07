@@ -2,9 +2,6 @@ name: Lint
 
 on:
   pull_request:
-    branches: [main]
-  push:
-    branches: [main]
 
 jobs:
   rust-lint:
@@ -61,7 +58,7 @@ jobs:
             commands: |
               pnpm --filter frontend nuxt prepare
               pnpm --filter frontend nuxt typecheck
-          
+
           - name: Backend Lint & Type Check
             workspace: backend
             commands: |
