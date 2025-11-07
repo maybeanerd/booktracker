@@ -148,7 +148,7 @@ jobs:
           projectPath: apps/frontend
           tauriScript: pnpm tauri
           tagName: ${{ github.ref_name }}
-          releaseName: 'BookTracker ${{ github.ref_name }}'
+          releaseName: 'booktracker ${{ github.ref_name }}'
           releaseBody: 'See the assets to download and install this version.'
           releaseDraft: true
           prerelease: false
@@ -211,7 +211,7 @@ jobs:
           projectPath: apps/frontend
           tauriScript: pnpm tauri
           tagName: ${{ github.ref_name }}
-          releaseName: 'BookTracker ${{ github.ref_name }}'
+          releaseName: 'booktracker ${{ github.ref_name }}'
           releaseBody: 'See the assets to download and install this version.'
           releaseDraft: true
           prerelease: false

@@ -1,92 +1,42 @@
-# BookTracker Backend
+# Backend
 
-NestJS backend API for BookTracker, using Drizzle ORM with PostgreSQL.
+NestJS API with Drizzle ORM and PostgreSQL.
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js (version specified in `.nvmrc`)
-- PostgreSQL
-
-### Setup
-
-1. Install dependencies (from root):
-   ```bash
-   pnpm install
-   ```
-
-2. Set up environment variables:
-   ```bash
-   cp .env.example .env
-   # Edit .env with your database credentials
-   ```
-
-3. Run migrations:
-   ```bash
-   pnpm db:migrate
-   ```
-
-### Development
+## Setup
 
 ```bash
-# Run dev server (from backend directory)
-pnpm dev
-
-# Or from root directory
-pnpm dev:backend
-
-# Run tests
-pnpm test
-
-# Run e2e tests
-pnpm test:e2e
-
-# Lint
-pnpm lint
-
-# Format
-pnpm format
-```
-
-### Database
-
-```bash
-# Generate migrations from schema changes
-pnpm db:generate
-
-# Run migrations
+# From root: pnpm install
+cp .env.example .env  # Edit with database credentials
 pnpm db:migrate
-
-# Open Drizzle Studio (database GUI)
-pnpm db:studio
 ```
 
-### Docker
+## Development
 
 ```bash
-# Build image
+pnpm dev         # Run dev server
+pnpm test        # Unit tests
+pnpm test:e2e    # E2E tests
+pnpm lint        # Lint code
+```
+
+## Database
+
+```bash
+pnpm db:generate  # Generate migration
+pnpm db:migrate   # Run migrations
+pnpm db:studio    # Open database GUI
+```
+
+Schema: `src/db/schema.ts`
+
+## Docker
+
+```bash
 docker build -t booktracker-backend .
+docker run -p 3001:3001 -e DATABASE_URL="..." booktracker-backend
 
-# Run container
-docker run -p 3001:3001 \
-  -e DATABASE_URL=postgresql://user:pass@host:5432/booktracker \
-  booktracker-backend
+# Or from root:
+docker compose up backend
 ```
 
-Or use docker-compose from the root:
-```bash
-docker-compose up backend
-```
-
-## API Endpoints
-
-- `GET /` - Health check
-- More endpoints to be documented...
-
-## Tech Stack
-
-- **Framework**: NestJS
-- **ORM**: Drizzle ORM
-- **Database**: PostgreSQL
-- **Language**: TypeScript
+For more information, check the [root readme](../../README.md).
