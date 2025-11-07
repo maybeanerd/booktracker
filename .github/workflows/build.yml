@@ -2,9 +2,6 @@ name: Build
 
 on:
   pull_request:
-    branches: [main]
-  push:
-    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -146,20 +143,10 @@ jobs:
       pull-requests: write
       contents: read
     steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-
       - name: Create build summary
         id: summary
         run: |
           echo "Build artifacts are ready for testing:" > summary.md
-          echo "" >> summary.md
-          echo "- 📱 Android (ARM64)" >> summary.md
-          echo "- 🐧 Linux (AppImage, .deb)" >> summary.md
-          echo "- 🍎 macOS (.dmg)" >> summary.md
-          echo "- 🪟 Windows (.msi, .exe)" >> summary.md
           echo "" >> summary.md
           echo "[📥 Download artifacts](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts)" >> summary.md
 
