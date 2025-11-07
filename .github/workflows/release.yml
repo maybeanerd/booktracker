@@ -118,11 +118,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Decode Android keystore (Android only)
+        if: matrix.platform == 'android'
+        run: |
+          echo "${{ secrets.TAURI_ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > /tmp/keystore.jks
+          echo "TAURI_ANDROID_KEYSTORE_PATH=/tmp/keystore.jks" >> $GITHUB_ENV
+
       - name: Build Android app
         if: matrix.platform == 'android'
         working-directory: apps/frontend
         env:
-          TAURI_ANDROID_KEYSTORE_PATH: ${{ secrets.TAURI_ANDROID_KEYSTORE_PATH }}
           TAURI_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.TAURI_ANDROID_KEYSTORE_PASSWORD }}
           TAURI_ANDROID_KEY_ALIAS: ${{ secrets.TAURI_ANDROID_KEY_ALIAS }}
           TAURI_ANDROID_KEY_PASSWORD: ${{ secrets.TAURI_ANDROID_KEY_PASSWORD }}
