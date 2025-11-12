@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Set up Nix
-        uses: DeterminateSystems/nix-installer-action@v20
+        uses: DeterminateSystems/nix-installer-action@v21
 
       - name: Speed up Nix cache
         uses: DeterminateSystems/magic-nix-cache-action@v13
