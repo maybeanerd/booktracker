@@ -13,7 +13,7 @@ jobs:
             nix-system: aarch64-darwin
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Nix
         uses: DeterminateSystems/nix-installer-action@v21
