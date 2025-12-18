@@ -1,4 +1,4 @@
-FROM node:24.11.1-slim
+FROM node:24.12.0-slim
 WORKDIR /app
 
 # Copy workspace configuration
