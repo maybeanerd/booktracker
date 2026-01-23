@@ -20,6 +20,6 @@
     "@tauri-apps/cli": "2.9.6",
     "nuxt": "4.3.0",
     "typescript": "5.9.3",
-    "vue-tsc": "3.2.2"
+    "vue-tsc": "3.2.3"
   }
 }
