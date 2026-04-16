@@ -24,9 +24,9 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@nestjs/common": "11.1.15",
-    "@nestjs/core": "11.1.15",
-    "@nestjs/platform-express": "11.1.15",
+    "@nestjs/common": "11.1.17",
+    "@nestjs/core": "11.1.17",
+    "@nestjs/platform-express": "11.1.17",
     "@nestjs/config": "4.0.3",
     "drizzle-orm": "0.45.1",
     "postgres": "3.4.8",
@@ -36,9 +36,9 @@
   "devDependencies": {
     "@eslint/eslintrc": "3.3.4",
     "@eslint/js": "9.39.3",
-    "@nestjs/cli": "11.0.16",
-    "@nestjs/schematics": "11.0.9",
-    "@nestjs/testing": "11.1.15",
+    "@nestjs/cli": "11.0.17",
+    "@nestjs/schematics": "11.0.10",
+    "@nestjs/testing": "11.1.17",
     "@types/express": "5.0.6",
     "@types/jest": "30.0.0",
     "@types/node": "24.11.0",
