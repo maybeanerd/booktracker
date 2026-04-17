@@ -28,7 +28,7 @@
     "@nestjs/core": "11.1.17",
     "@nestjs/platform-express": "11.1.17",
     "@nestjs/config": "4.0.3",
-    "drizzle-orm": "0.45.1",
+    "drizzle-orm": "0.45.2",
     "postgres": "3.4.8",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2"
