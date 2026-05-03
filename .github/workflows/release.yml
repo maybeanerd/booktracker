@@ -104,7 +104,7 @@ jobs:
 
       - name: Setup Android SDK (Android only)
         if: matrix.platform == 'android'
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
 
       - name: Setup Android NDK (Android only)
         if: matrix.platform == 'android'
