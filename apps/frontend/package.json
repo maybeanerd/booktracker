@@ -12,12 +12,12 @@
     "nuxt:build": "nuxt generate"
   },
   "dependencies": {
-    "@tauri-apps/api": "2.10.1",
+    "@tauri-apps/api": "2.11.1",
     "@tauri-apps/plugin-opener": "2.5.3"
   },
   "devDependencies": {
     "@nuxt/devtools": "3.2.4",
-    "@tauri-apps/cli": "2.10.1",
+    "@tauri-apps/cli": "2.11.4",
     "nuxt": "4.4.2",
     "typescript": "5.9.3",
     "vue-tsc": "3.2.7"
